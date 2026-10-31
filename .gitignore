@@ -1,0 +1,29 @@
+# Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+# Local media and model outputs
+data/
+results/
+outputs/
+cache/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.pt
+*.pth
+*.safetensors
+# Node and local editor state
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
