@@ -2,8 +2,8 @@
 
 Local-only baseline. No model calls, no network. Scope: fixture generation,
 video loading (frame-sequence backend), manual offset, selection persistence,
-side-by-side preview. Deferred: mp4 backend (until real footage arrives),
-segmentation/matching adapters, result caching.
+side-by-side preview. Video-file backend: see docs/REAL_CLIPS.md.
+Still deferred: segmentation/matching adapters, result caching.
 
 ## Setup
 

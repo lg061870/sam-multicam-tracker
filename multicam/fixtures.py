@@ -59,3 +59,31 @@ def generate_pair(out_dir, num_frames=60, fps=10, offset_frames=5, size=(320, 24
     )
     (out / "ground_truth.json").write_text(json.dumps(gt))
     return out
+
+
+def generate_mp4(path, num_frames=30, fps=10, size=(320, 240), start_scene=0,
+                 bg=(60, 60, 70), label="mp4"):
+    """Encode a small MP4 with the same moving-rectangle scene. Needs PyAV.
+
+    size must have even dimensions (yuv420p). start_scene shifts the motion
+    so a second clip can simulate a known time offset.
+    """
+    import av
+
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    w, h = size
+    if w % 2 or h % 2:
+        raise ValueError(f"mp4 size must be even, got {size}")
+    container = av.open(str(p), "w")
+    stream = container.add_stream("mpeg4", rate=fps)
+    stream.width, stream.height, stream.pix_fmt = w, h, "yuv420p"
+    for i in range(num_frames):
+        scene = start_scene + i
+        img = _render(w, h, bg, f"{label} f{i}", (object_x(scene), 100))
+        for packet in stream.encode(av.VideoFrame.from_image(img)):
+            container.mux(packet)
+    for packet in stream.encode():
+        container.mux(packet)
+    container.close()
+    return p
