@@ -22,6 +22,7 @@ cache/
 *.pt
 *.pth
 *.safetensors
+/test_crop_*.png
 # Node and local editor state
 node_modules/
 dist/

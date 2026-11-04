@@ -1,2 +1,8 @@
 Pillow>=10
 av>=10
+openai>=1.0
+meta_sam_parser
+fastapi>=0.100
+uvicorn>=0.20
+python-multipart>=0.0.9
+httpx>=0.24

@@ -68,6 +68,53 @@ Official documentation:
 - https://developers.meta.com/blog/meta-connect-recap/
 - https://dev.meta.ai/events/global-hackathon
 
+## Running the Application
+
+### 1. Web dashboard (recommended)
+
+Build the frontend once, then run the FastAPI server, which serves it:
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+python server.py
+```
+
+Open **http://localhost:8000**. The server only accepts local connections.
+
+The workflow runs top to bottom in the side panel:
+
+1. **Choose an object**: describe it, pick a suggestion, or use **Suggest objects**. A check mark means it is already tracked and opens for free.
+2. **Review tracks**: watch the mask and box overlays on both cameras. If a camera has several instances, choose the same physical object on each side. The strips under the timeline show when it is visible.
+3. **Compare cameras**: see the two crops being compared, then run the check. The result is the vision model's own verdict and self-reported confidence. It is evidence for one moment, not proof that re-identification works in general.
+
+Play, scrubbing and opening saved results never make a paid call. Only **Track**, **Suggest objects** and **Compare crops** can, and each result is saved under `cache/`. Keyboard: `Space` plays or pauses, `←` and `→` step one frame.
+
+Clips (`outputs/`) and results (`cache/`) are not in git, so a fresh clone starts empty: use **Add clips**.
+
+For frontend development with hot reloading, keep `python server.py` running and start Vite in a second terminal:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+### 2. Desktop Tkinter viewer (alternative)
+
+```powershell
+python -m multicam.viewer --pair outputs/real --out outputs/real/target.json
+```
+
+### Tests
+
+```powershell
+python -m unittest discover -s tests
+cd frontend
+npm test
+```
+
 ## First task for Muse Code
 
 Read this README. Propose the smallest two-camera prototype architecture and implementation plan. Start with offline video loading, synchronization, and target selection. Use cached or synthetic fixtures for development. Identify a suitable cross-camera matching method separately from SAM segmentation. Ask the project owner before making paid inference requests. Do not claim cross-camera identity matching works until demonstrated on the recorded pair.

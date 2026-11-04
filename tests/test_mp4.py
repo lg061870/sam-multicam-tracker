@@ -1,5 +1,6 @@
 """MP4 backend validation (stdlib unittest; needs PyAV)."""
 import importlib.util
+import json
 import shutil
 import tempfile
 import unittest
@@ -125,6 +126,45 @@ class Mp4Test(unittest.TestCase):
         self.assertEqual(
             display_to_original([64, 48, 32, 16], 0.5), [128, 96, 64, 32]
         )
+
+
+class DetectPairsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = Path(tempfile.mkdtemp(prefix="dp_"))
+        clips = cls.tmp / "clips"
+        clips.mkdir()
+        (clips / "Run01_angle1_sync.mp4").touch()
+        (clips / "Run01_angle2_sync.mp4").touch()
+        (clips / "Run02_angle1_sync.mp4").touch()  # no angle2: skipped
+        (clips / "note.txt").touch()
+        cls.clips = clips
+        cls.empty = cls.tmp / "empty"
+        cls.empty.mkdir()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_detect(self):
+        pairs = inspect_mod.detect_pairs(self.clips)
+        self.assertEqual(len(pairs), 1)
+        name, a, b = pairs[0]
+        self.assertIn("Run01", name)
+        self.assertTrue(str(a).endswith("angle1_sync.mp4"))
+        self.assertTrue(str(b).endswith("angle2_sync.mp4"))
+
+    def test_detect_empty(self):
+        self.assertEqual(inspect_mod.detect_pairs(self.empty), [])
+
+    def test_ensure_pair_dir(self):
+        name, a, b = inspect_mod.detect_pairs(self.clips)[0]
+        d = inspect_mod.ensure_pair_dir(
+            name, a, b, root=self.tmp / "opened")
+        cfg = json.loads((d / "pair.json").read_text())
+        self.assertEqual(cfg["offset_seconds"], 0.0)
+        self.assertTrue(cfg["camA"].endswith("angle1_sync.mp4"))
+        self.assertTrue(cfg["camB"].endswith("angle2_sync.mp4"))
 
 
 if __name__ == "__main__":

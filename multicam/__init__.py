@@ -4,4 +4,4 @@ Local-only baseline: fixture generation, clip loading, manual-offset
 alignment, selection persistence, side-by-side preview. No model calls.
 """
 
-__all__ = ["fixtures", "loader", "selection", "preview", "viewer", "inspect"]
+__all__ = ["fixtures", "loader", "selection", "preview", "viewer", "inspect", "sam", "matching"]

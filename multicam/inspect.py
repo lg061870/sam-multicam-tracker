@@ -41,6 +41,36 @@ def compare(a: dict, b: dict) -> list[str]:
     return notes
 
 
+def detect_pairs(folder: str | Path) -> list:
+    """Find angle1/angle2 video pairs in a folder.
+
+    Returns [(name, pathA, pathB)] sorted by name. A file matches when
+    replacing '_angle1_' with '_angle2_' in its name yields an existing file.
+    """
+    from .loader import VIDEO_SUFFIXES
+
+    out = []
+    for a in sorted(Path(folder).glob("*_angle1_*")):
+        if a.suffix.lower() not in VIDEO_SUFFIXES or not a.is_file():
+            continue
+        b = a.parent / a.name.replace("_angle1_", "_angle2_")
+        if b.is_file():
+            prefix, _, rest = a.stem.partition("_angle1_")
+            out.append((f"{prefix} ({rest})" if rest else a.stem, a, b))
+    return out
+
+
+def ensure_pair_dir(name: str, a: str | Path, b: str | Path,
+                    offset: float = 0.0,
+                    root: str | Path = "outputs/opened") -> Path:
+    """Write a pair.json for two clips under root/; returns the pair dir."""
+    safe = "".join(c if c.isalnum() or c in "-_()"
+                   else "_" for c in name).replace(" ", "")
+    d = Path(root) / safe
+    write_pair(d / "pair.json", a, b, offset)
+    return d
+
+
 def write_pair(out_path: str | Path, a: str | Path, b: str | Path, offset: float) -> Path:
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
