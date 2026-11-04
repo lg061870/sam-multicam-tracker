@@ -109,7 +109,13 @@ export default function Stage({ pair, info, tracks, objectA, objectB }) {
     paintOverlay(canvasB.current, camBFrame(current, timing), overlayB, 'b', images.current);
   }, [overlayA, overlayB, timing]);
 
-  useEffect(draw, [draw, frame]);
+  // Always the current draw: a mask that finishes loading after the object has
+  // changed must not repaint the previous object's overlay.
+  const latestDraw = useRef(draw);
+  useEffect(() => {
+    latestDraw.current = draw;
+    draw();
+  }, [draw, frame]);
 
   // Load masks for the chosen objects; the box outline shows until each arrives.
   useEffect(() => {
@@ -118,12 +124,12 @@ export default function Stage({ pair, info, tracks, objectA, objectB }) {
         const url = maskUrl(overlay.key, mask, cam);
         if (images.current.has(url)) continue;
         const image = new Image();
-        image.onload = () => draw();
+        image.onload = () => latestDraw.current();
         image.src = url;
         images.current.set(url, image);
       }
     }
-  }, [overlayA, overlayB, draw]);
+  }, [overlayA, overlayB]);
 
   const seek = useCallback((target) => {
     const next = Math.max(0, Math.min(lastFrame, target));

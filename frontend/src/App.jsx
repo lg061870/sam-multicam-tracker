@@ -269,7 +269,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>Multicam Tracker</h1>
+        <h1>OjoVial</h1>
         <div className="clip-picker">
           <label htmlFor="clip">Clip</label>
           <select

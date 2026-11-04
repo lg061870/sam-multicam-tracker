@@ -1,14 +1,32 @@
-# SAM Multi-camera Tracker
+# OjoVial
 
-Controlled two-camera, single-object tracking prototype for the Meta Global AI Developer Hackathon.
+A scale-model testbed for zero-shot multi-camera vehicle tracking with SAM 3.1 and Muse Spark 1.3, built for the Meta Global AI Developer Hackathon. City cameras at intersections like San José's Circunvalación work as disconnected silos; without access to municipal feeds, this prototype tests cross-camera tracking on a tabletop with two real cameras.
 
 ## Goal and current status
 
 A user selects one object in Camera A. The prototype tracks its visible mask and proposes the same object's match in Camera B. Begin with overlapping views, fixed cameras, one distinctive object, and short synchronized recordings. Four cameras, non-overlapping handoffs, and road traffic are later experiments.
 
-Status: planning and recording preparation. No cross-camera matching has been implemented or validated. Muse Code setup is pending.
+Status: working prototype. A web dashboard plays two synchronized clips, tracks a described object in each with SAM 3.1, and asks Muse Spark 1.3 whether the two crops show the same object. That check is a per-moment model verdict with self-reported confidence; it has not been validated as a general re-identification method.
 
 SAM supplies segmentation within each view. Cross-camera identity matching is a separate component and must be tested; SAM alone does not guarantee identity across videos.
+
+## Quick start
+
+Requires Python 3.12, Node.js and a Meta Model API key.
+
+```powershell
+git clone https://github.com/lg061870/sam-multicam-tracker.git
+cd sam-multicam-tracker
+pip install -r requirements.txt
+Copy-Item .env.example .env   # then set MODEL_API_KEY in .env, uncommented
+cd frontend
+npm install
+npm run build
+cd ..
+python server.py
+```
+
+Open http://localhost:8000 and use **Add clips** to load two videos. The key is read only from the `MODEL_API_KEY` environment variable or the git-ignored `.env` file. See [Running the Application](#running-the-application) for the workflow.
 
 ## First recording
 

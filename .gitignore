@@ -23,6 +23,9 @@ cache/
 *.pth
 *.safetensors
 /test_crop_*.png
+# Demo recording output (the scripts in demo/ are tracked)
+demo/build/
+demo/*.mp4
 # Node and local editor state
 node_modules/
 dist/
